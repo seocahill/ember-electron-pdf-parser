@@ -1,6 +1,8 @@
 /* eslint-env node */
 const electron = require('electron');
-const { app, BrowserWindow, protocol } = electron;
+const PDFParser = require("pdf2json");
+
+const { app, BrowserWindow, protocol, ipcMain } = electron;
 const { dirname, join, resolve } = require('path');
 const protocolServe = require('electron-protocol-serve');
 
@@ -64,6 +66,17 @@ app.on('ready', () => {
     mainWindow = null;
   });
 });
+
+ipcMain.on('parse-pdf', function (e, n) {
+  let pdfParser = new PDFParser();
+  let testPdfPath = "/Users/seocahill/Documents/Accounting/2015/joseph\ murphy/joseph\ murphy\ \(ballina\)\ ltd\ 31.12.2015.PDF";
+
+  pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
+  pdfParser.on("pdfParser_dataReady", pdfData => {
+    e.sender.send('parse-pdf-done', pdfData)
+  });
+  pdfParser.loadPDF(testPdfPath);
+})
 
 // Handle an unhandled error in the main thread
 //
