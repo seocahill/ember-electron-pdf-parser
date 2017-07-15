@@ -34,11 +34,15 @@
     "ember-load-initializers": "^1.0.0",
     "ember-resolver": "^4.0.0",
     "ember-source": "~2.14.0",
-    "ember-welcome-page": "^3.0.0",
     "loader.js": "^4.2.3"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "ember-electron": "^2.2.2",
+    "junk": "^2.1.0",
+    "pdf2json": "^1.1.7"
+  }
 }
