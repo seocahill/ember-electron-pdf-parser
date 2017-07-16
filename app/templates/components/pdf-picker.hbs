@@ -1,23 +1,18 @@
 <h1>Generate csv</h1>
-{{#if file}}
-  <a href="#" {{action "parsePdf"}}>Parse {{file}}</a>
+{{#if rows}}
+  <a href="#" {{action "clear"}}>Reset</a>
 {{else}}
   <a href="#" {{action "pickFile"}}>Choose file</a>
 {{/if}}
 
-{{#if rows}}
-  <a href="#" {{action "clear"}}>Reset</a>
-  <table>
-    <tbody>
-      {{#each rows as |row|}}
-        {{#each-in row as |k v|}}
-          <tr>
-            {{#each v as |cell|}}
-              <td>{{cell}}</td>
-            {{/each}}
-          </tr>
-        {{/each-in}}
-      {{/each}}
-    </tbody>
-  </table>
-{{/if}}
+<table>
+  <tbody>
+    {{#each rows as |row|}}
+      <tr>
+        {{#each row as |cell|}}
+          <td>{{cell}}</td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
