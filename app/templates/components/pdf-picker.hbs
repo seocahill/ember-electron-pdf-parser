@@ -4,3 +4,17 @@
 {{else}}
   <a href="#" {{action "pickFile"}}>Choose file</a>
 {{/if}}
+
+{{#if rows}}
+  <table>
+    <tbody>
+      {{#each rows as |row|}}
+        <tr>
+           {{#each-in row as |k v|}}
+              <td>{{v}}</td>
+            {{/each-in}}
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{/if}}

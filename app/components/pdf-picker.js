@@ -1,21 +1,17 @@
 import Ember from 'ember';
 
-const fs = requireNode('fs');
 const { ipcRenderer, remote } = requireNode('electron');
 const { dialog } = remote;
 
-
 export default Ember.Component.extend({
   file: null,
+  rows: [],
 
   actions: {
 
     parsePdf() {
       ipcRenderer.send('parse-pdf', this.get('file'));
-      ipcRenderer.on('parse-pdf-done', function (e, pdfData) {
-        fs.writeFile("electron-pdf-test.json", JSON.stringify(pdfData));
-        alert("Success!")
-      })
+      ipcRenderer.on('parse-pdf-done', (e, pdfData) => this._displayPdf(pdfData));
     },
     
     pickFile() {
@@ -24,5 +20,20 @@ export default Ember.Component.extend({
         filters: [{ name: 'Pdf', extensions: ['pdf'] }]
       }, (files) => this.set('file', files[0]));
     }
+  },
+
+  _displayPdf(data) {
+    data.formImage.Pages.forEach((page) => {
+      this._pageToRows(page);
+    });
+  },
+
+  _pageToRows(page) {
+    let pageRows = {}
+    page.Texts.forEach((text) => {
+      pageRows[text.y] = pageRows[text.y] || [];
+      pageRows[text.y].addObject(text.R[0].T);
+    });
+    this.get('rows').addObject(pageRows);
   }
 });
