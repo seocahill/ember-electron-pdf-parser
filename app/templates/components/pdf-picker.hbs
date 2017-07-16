@@ -6,14 +6,17 @@
 {{/if}}
 
 {{#if rows}}
+  <a href="#" {{action "clear"}}>Reset</a>
   <table>
     <tbody>
       {{#each rows as |row|}}
-        <tr>
-           {{#each-in row as |k v|}}
-              <td>{{v}}</td>
-            {{/each-in}}
-        </tr>
+        {{#each-in row as |k v|}}
+          <tr>
+            {{#each v as |cell|}}
+              <td>{{cell}}</td>
+            {{/each}}
+          </tr>
+        {{/each-in}}
       {{/each}}
     </tbody>
   </table>

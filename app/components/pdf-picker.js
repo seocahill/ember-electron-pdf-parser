@@ -11,7 +11,7 @@ export default Ember.Component.extend({
 
     parsePdf() {
       ipcRenderer.send('parse-pdf', this.get('file'));
-      ipcRenderer.on('parse-pdf-done', (e, pdfData) => this._displayPdf(pdfData));
+      ipcRenderer.once('parse-pdf-done', (e, pdfData) => this._displayPdf(pdfData));
     },
     
     pickFile() {
@@ -19,6 +19,10 @@ export default Ember.Component.extend({
         properties: ['openFile'],
         filters: [{ name: 'Pdf', extensions: ['pdf'] }]
       }, (files) => this.set('file', files[0]));
+    },
+
+    clear() {
+      this.setProperties({ rows: [], file: null });
     }
   },
 
@@ -35,5 +39,6 @@ export default Ember.Component.extend({
       pageRows[text.y].addObject(text.R[0].T);
     });
     this.get('rows').addObject(pageRows);
+    pageRows = null;
   }
 });
