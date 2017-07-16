@@ -26,6 +26,7 @@ export default Ember.Component.extend({
   },
 
   _displayPdf(data) {
+    const vendor = data.formImage.Agency;
     data.formImage.Pages.forEach((page) => {
       this._pageToRows(page);
     });
@@ -34,10 +35,21 @@ export default Ember.Component.extend({
   _pageToRows(page) {
     let pageRows = {}
     page.Texts.forEach((text) => {
-      pageRows[text.y] = pageRows[text.y] || [];
-      pageRows[text.y].addObject(unescape(text.R[0].T));
+      const idx = (text.y).toFixed(1);
+      pageRows[idx] = pageRows[idx] || [];
+      pageRows[idx].addObject(unescape(text.R[0].T));
+      if (pageRows[idx].length === 1 && text.x > 10) {
+        pageRows[idx].unshiftObject("");
+      }
     });
-    this.get('rows').addObjects(Object.values(pageRows));
+    const values = (Object.values(pageRows));
+    values.forEach((value) => {
+      const times = 8 - value.length;
+      for (var i = 0; i < times; i++) {
+        value.pushObject("");
+      }
+    });
+    this.get('rows').addObjects(values);
     pageRows = null;
   }
 });
