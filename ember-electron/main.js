@@ -67,15 +67,14 @@ app.on('ready', () => {
   });
 });
 
-ipcMain.on('parse-pdf', function (e, n) {
+ipcMain.on('parse-pdf', function (e, file) {
   let pdfParser = new PDFParser();
-  let testPdfPath = "/Users/seocahill/Documents/Accounting/2015/joseph\ murphy/joseph\ murphy\ \(ballina\)\ ltd\ 31.12.2015.PDF";
 
   pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
   pdfParser.on("pdfParser_dataReady", pdfData => {
     e.sender.send('parse-pdf-done', pdfData)
   });
-  pdfParser.loadPDF(testPdfPath);
+  pdfParser.loadPDF(file);
 })
 
 // Handle an unhandled error in the main thread

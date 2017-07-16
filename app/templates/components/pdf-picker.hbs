@@ -1,3 +1,6 @@
 <h1>Generate csv</h1>
-<a href="#" {{action "pickFile"}}>Choose file</a>
-<a href="#" {{action "parsePdf"}}>Go!</a>
+{{#if file}}
+  <a href="#" {{action "parsePdf"}}>Parse {{file}}</a>
+{{else}}
+  <a href="#" {{action "pickFile"}}>Choose file</a>
+{{/if}}

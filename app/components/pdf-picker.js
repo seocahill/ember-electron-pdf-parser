@@ -6,10 +6,12 @@ const { dialog } = remote;
 
 
 export default Ember.Component.extend({
+  file: null,
+
   actions: {
 
     parsePdf() {
-      ipcRenderer.send('parse-pdf');
+      ipcRenderer.send('parse-pdf', this.get('file'));
       ipcRenderer.on('parse-pdf-done', function (e, pdfData) {
         fs.writeFile("electron-pdf-test.json", JSON.stringify(pdfData));
         alert("Success!")
@@ -17,7 +19,10 @@ export default Ember.Component.extend({
     },
     
     pickFile() {
-      dialog.showOpenDialog({ properties: ['openFile', 'openDirectory', 'multiSelections'] });
+      dialog.showOpenDialog({ 
+        properties: ['openFile'],
+        filters: [{ name: 'Pdf', extensions: ['pdf'] }]
+      }, (files) => this.set('file', files[0]));
     }
   }
 });
