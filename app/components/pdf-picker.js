@@ -35,7 +35,7 @@ export default Ember.Component.extend({
     let pageRows = {}
     page.Texts.forEach((text) => {
       pageRows[text.y] = pageRows[text.y] || [];
-      pageRows[text.y].addObject(text.R[0].T);
+      pageRows[text.y].addObject(unescape(text.R[0].T));
     });
     this.get('rows').addObjects(Object.values(pageRows));
     pageRows = null;

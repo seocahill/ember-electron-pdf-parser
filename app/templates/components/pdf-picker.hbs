@@ -1,18 +1,23 @@
-<h1>Generate csv</h1>
 {{#if rows}}
-  <a href="#" {{action "clear"}}>Reset</a>
+  <div class="card">
+    <div class="card-block">
+      <table class="table table-bordered">
+        <tbody>
+          {{#each rows as |row|}}
+          <tr>
+            {{#each row as |cell|}}
+            <td>{{cell}}</td>
+            {{/each}}
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {{else}}
-  <a href="#" {{action "pickFile"}}>Choose file</a>
+  <div class="container" style="height: 80vh;">
+    <div class="row h-100 justify-content-center align-items-center">
+      <span class="align-middle"><a href="#" class="btn btn-outline-primary btn-lg" {{action "pickFile"}}>Choose file</a></span>
+    </div>
+  </div>
 {{/if}}
-
-<table>
-  <tbody>
-    {{#each rows as |row|}}
-      <tr>
-        {{#each row as |cell|}}
-          <td>{{cell}}</td>
-        {{/each}}
-      </tr>
-    {{/each}}
-  </tbody>
-</table>
