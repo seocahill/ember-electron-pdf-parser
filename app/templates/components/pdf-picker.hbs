@@ -1,5 +1,6 @@
-{{#if rows}}
+{{#if pages}}
   <div class="card">
+    {{#each pages as |rows|}}
     <div class="card-block">
       <table class="table table-bordered">
         <tbody>
@@ -13,6 +14,7 @@
         </tbody>
       </table>
     </div>
+    {{/each}}
   </div>
 {{else}}
   <div class="container" style="height: 80vh;">

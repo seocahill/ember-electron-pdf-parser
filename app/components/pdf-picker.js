@@ -4,7 +4,7 @@ const { ipcRenderer, remote } = requireNode('electron');
 const { dialog } = remote;
 
 export default Ember.Component.extend({
-  rows: [],
+  pages: [],
 
   actions: {
 
@@ -34,22 +34,38 @@ export default Ember.Component.extend({
 
   _pageToRows(page) {
     let pageRows = {}
+    let rows = {};
+    const xPositions = [];
+
     page.Texts.forEach((text) => {
-      const idx = (text.y).toFixed(1);
-      pageRows[idx] = pageRows[idx] || [];
-      pageRows[idx].addObject(unescape(text.R[0].T));
-      if (pageRows[idx].length === 1 && text.x > 10) {
-        pageRows[idx].unshiftObject("");
-      }
+      const y = (text.y).toFixed(1);
+      const x = text.x;
+      // const t = unescape(text.R[0].T);
+
+      pageRows[y] = pageRows[y] || 0;
+      pageRows[y] += 1;
+      xPositions.addObject(x);
     });
+    
     const values = (Object.values(pageRows));
-    values.forEach((value) => {
-      const times = 8 - value.length;
-      for (var i = 0; i < times; i++) {
-        value.pushObject("");
-      }
+    const domain = [0, 40];
+    const threshold = Math.max(...values);
+    const histogram = d3.histogram().domain(domain).thresholds(threshold);
+    const bins = histogram(xPositions);
+
+    page.Texts.forEach((text) => {
+      const y = (text.y).toFixed(1);
+      const x = text.x;
+      const t = unescape(text.R[0].T);
+
+      bins.forEach((bin, index) => {
+        if (bin.includes(x)) {
+          rows[y] = rows[y] || Array(threshold).fill("");
+          rows[y][index] = t;
+        }
+      });
     });
-    this.get('rows').addObjects(values);
-    pageRows = null;
+
+    this.get('pages').addObject(Object.values(rows));
   }
 });
