@@ -40,8 +40,6 @@ export default Ember.Component.extend({
     page.Texts.forEach((text) => {
       const y = (text.y).toFixed(1);
       const x = text.x;
-      // const t = unescape(text.R[0].T);
-
       pageRows[y] = pageRows[y] || 0;
       pageRows[y] += 1;
       xPositions.addObject(x);
@@ -60,12 +58,11 @@ export default Ember.Component.extend({
 
       bins.forEach((bin, index) => {
         if (bin.includes(x)) {
-          rows[y] = rows[y] || Array(threshold).fill("");
+          rows[y] = rows[y] || Array((threshold + 1)).fill("");
           rows[y][index] = t;
         }
       });
     });
-
     this.get('pages').addObject(Object.values(rows));
   }
 });
