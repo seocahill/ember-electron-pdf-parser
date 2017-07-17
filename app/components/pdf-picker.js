@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 const { ipcRenderer, remote } = requireNode('electron');
 const { dialog } = remote;
+const { unparse } = requireNode('papaparse');
+const fs = requireNode('fs');
 
 export default Ember.Component.extend({
   pages: [],
@@ -17,7 +19,21 @@ export default Ember.Component.extend({
 
     clear() {
       this.setProperties({ rows: [], file: null });
+    },
+
+    save() {
+      dialog.showSaveDialog({ 
+        filters: [{ name: 'Csv', extensions: ['csv'] }]
+      }, (path) => this._saveCsv(path));
     }
+  },
+
+  _saveCsv(path) {
+    const rows = [];
+    this.get('pages').forEach((page) => rows.addObjects(page));
+    debugger
+    const data = unparse(rows, { header: false });
+    fs.writeFile(path, data);
   },
 
   _parsePdf(file) {
@@ -26,7 +42,6 @@ export default Ember.Component.extend({
   },
 
   _displayPdf(data) {
-    const vendor = data.formImage.Agency;
     data.formImage.Pages.forEach((page) => {
       this._pageToRows(page);
     });
