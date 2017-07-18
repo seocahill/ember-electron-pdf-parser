@@ -1,3 +1,5 @@
+/* global d3 */
+
 import Ember from 'ember';
 
 const { ipcRenderer, remote } = requireNode('electron');
@@ -31,7 +33,6 @@ export default Ember.Component.extend({
   _saveCsv(path) {
     const rows = [];
     this.get('pages').forEach((page) => rows.addObjects(page));
-    debugger
     const data = unparse(rows, { header: false });
     fs.writeFile(path, data);
   },
