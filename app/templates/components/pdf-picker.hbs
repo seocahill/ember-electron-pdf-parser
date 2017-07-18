@@ -1,8 +1,9 @@
 {{#if pages}}
   <a href="#" {{action "save"}}>Save</a>
   <div class="card">
-    {{#each pages as |rows|}}
+    {{#each pages as |rows index|}}
     <div class="card-block">
+      <p><a href="#" {{action "insert" index}}>Insert replacement page</a></p>
       <table class="table table-bordered">
         <tbody>
           {{#each rows as |row|}}

@@ -23,11 +23,23 @@ export default Ember.Component.extend({
       this.setProperties({ rows: [], file: null });
     },
 
+    insert(pageIdx) {
+      dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Pdf', extensions: ['pdf'] }]
+      }, (files) => this._insertPage(files[0], pageIdx));
+    },
+
     save() {
       dialog.showSaveDialog({ 
         filters: [{ name: 'Csv', extensions: ['csv'] }]
       }, (path) => this._saveCsv(path));
     }
+  },
+
+  _insertPage(file, oldPageIdx) {
+    ipcRenderer.send('parse-pdf', file);
+    ipcRenderer.once('parse-pdf-done', (e, pdfData) => this._pageToRows(pdfData.formImage.Pages[0], oldPageIdx));
   },
 
   _saveCsv(path) {
@@ -48,7 +60,7 @@ export default Ember.Component.extend({
     });
   },
 
-  _pageToRows(page) {
+  _pageToRows(page, oldPageIdx = null) {
     let pageRows = {}
     let rows = {};
     const xPositions = [];
@@ -79,6 +91,11 @@ export default Ember.Component.extend({
         }
       });
     });
-    this.get('pages').addObject(Object.values(rows));
+    if (oldPageIdx) {
+      this.get('pages').removeAt(oldPageIdx);
+      this.get('pages').insertAt(oldPageIdx, Object.values(rows));
+    } else {
+      this.get('pages').addObject(Object.values(rows));
+    }
   }
 });
