@@ -27,8 +27,8 @@ export default Ember.Component.extend({
       }, (files) => this._parsePdf(files[0]));
     },
 
-    clear() {
-      this.setProperties({ rows: [], file: null });
+    reset() {
+      this.setProperties({ pages: [], data: [], thresholds: [], currentPage: null });
     },
 
     insert() {
@@ -58,6 +58,7 @@ export default Ember.Component.extend({
       } else {
         this.set('currentPage', this.get('pages.firstObject'));
       }
+      this.get('pageNumber')(this.get('currentIndex') + 1);
     },
 
     prev() {
@@ -68,6 +69,7 @@ export default Ember.Component.extend({
       } else {
         this.set('currentPage', this.get('pages.lastObject'));
       }
+      this.get('pageNumber')(this.get('currentIndex') + 1);
     }
   },
 
@@ -94,6 +96,8 @@ export default Ember.Component.extend({
       this._pageToRows(page, idx);
     });
     this.set('currentPage', this.get('pages.firstObject'));
+    this.get('pageNumber')(1);
+    this.get('pageLength')(this.get('pages.length'));
   },
 
   _pageToRows(page, idx, adjustment = 0) {

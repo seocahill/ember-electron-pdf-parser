@@ -3,16 +3,16 @@
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="#">Pdf to Csv convertor</a>
+  <a class="navbar-brand" href="#">Tabular PDF to CSV convertor</a>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Reset <span class="sr-only">(current)</span></a>
-      </li>
-    </ul>
+    {{#if pageNumber}}
+      <span class="navbar-text">
+        Page {{pageNumber}}/{{pageLength}}
+      </span>
+    {{/if}}
   </div>
 </nav>
 <div class="container-fluid h-100">
- {{pdf-picker}}
+  {{pdf-picker pageNumber=(action (mut pageNumber)) pageLength=(action (mut pageLength))}}
 </div>
