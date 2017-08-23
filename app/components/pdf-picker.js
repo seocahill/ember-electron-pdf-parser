@@ -12,6 +12,12 @@ export default Ember.Component.extend({
   data: [],
   thresholds: [],
 
+  currentPage: null,
+
+  currentIndex: Ember.computed('currentPage', function() {
+    return this.get('pages').indexOf(this.get('currentPage'));
+  }),
+
   actions: {
 
     pickFile() {
@@ -25,14 +31,15 @@ export default Ember.Component.extend({
       this.setProperties({ rows: [], file: null });
     },
 
-    insert(pageIdx) {
+    insert() {
       dialog.showOpenDialog({
         properties: ['openFile'],
         filters: [{ name: 'Pdf', extensions: ['pdf'] }]
-      }, (files) => this._insertPage(files[0], pageIdx));
+      }, (files) => this._insertPage(files[0]));
     },
 
-    adjustThreshold(pageIdx, adjustment) {
+    adjustThreshold(adjustment) {
+      const pageIdx = this.get('currentIndex');
       const page = this.get('data').objectAt(pageIdx);
       this._pageToRows(page, pageIdx, adjustment)
     },
@@ -41,12 +48,32 @@ export default Ember.Component.extend({
       dialog.showSaveDialog({ 
         filters: [{ name: 'Csv', extensions: ['csv'] }]
       }, (path) => this._saveCsv(path));
+    },
+
+    next() {
+      let idx = this.get('currentIndex');
+      const nextPage = this.get('pages').objectAt(idx + 1)
+      if (nextPage) {
+        this.set('currentPage', nextPage);
+      } else {
+        this.set('currentPage', this.get('pages.firstObject'));
+      }
+    },
+
+    prev() {
+      let idx = this.get('currentIndex');
+      const lastPage = this.get('pages').objectAt(idx - 1)
+      if (lastPage) {
+        this.set('currentPage', lastPage);
+      } else {
+        this.set('currentPage', this.get('pages.lastObject'));
+      }
     }
   },
 
-  _insertPage(file, oldPageIdx) {
+  _insertPage(file) {
     ipcRenderer.send('parse-pdf', file);
-    ipcRenderer.once('parse-pdf-done', (e, pdfData) => this._pageToRows(pdfData.formImage.Pages[0], oldPageIdx));
+    ipcRenderer.once('parse-pdf-done', (e, pdfData) => this._pageToRows(pdfData.formImage.Pages[0], this.get('currentIndex')));
   },
 
   _saveCsv(path) {
@@ -66,6 +93,7 @@ export default Ember.Component.extend({
     data.formImage.Pages.forEach((page, idx) => {
       this._pageToRows(page, idx);
     });
+    this.set('currentPage', this.get('pages.firstObject'));
   },
 
   _pageToRows(page, idx, adjustment = 0) {
@@ -105,6 +133,7 @@ export default Ember.Component.extend({
     if (this.get('pages').objectAt(idx)) {
       this.get('pages').removeAt(idx);
       this.get('pages').insertAt(idx, Object.values(rows));
+      this.set('currentPage', this.get('pages').objectAt(idx))
     } else {
       this.get('pages').addObject(Object.values(rows));
     }

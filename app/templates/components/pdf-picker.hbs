@@ -1,16 +1,17 @@
 {{#if pages}}
   <a href="#" {{action "save"}}>Save</a>
   <div class="card">
-    {{#each pages as |rows index|}}
     <div class="card-block">
       <p>
-        <a href="#" {{action "insert" index}}>Insert replacement page</a>
-        <a href="#" {{action "adjustThreshold" index 1}}>+</a>
-        <a href="#" {{action "adjustThreshold" index -1}}>-</a>
+        <a href="#" {{action "insert"}}>Insert replacement page</a>
+        <a href="#" {{action "adjustThreshold" 1}}>+</a>
+        <a href="#" {{action "adjustThreshold" -1}}>-</a>
+        <a href="#" {{action "next"}}>next</a>
+        <a href="#" {{action "prev"}}>prev</a>
       </p>
       <table class="table table-bordered">
         <tbody>
-          {{#each rows as |row|}}
+          {{#each currentPage as |row|}}
           <tr>
             {{#each row as |cell|}}
             <td>{{cell}}</td>
@@ -20,7 +21,6 @@
         </tbody>
       </table>
     </div>
-    {{/each}}
   </div>
 {{else}}
   <div class="container" style="height: 80vh;">
