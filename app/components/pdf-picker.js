@@ -9,6 +9,8 @@ const fs = requireNode('fs');
 
 export default Ember.Component.extend({
   pages: [],
+  data: [],
+  thresholds: [],
 
   actions: {
 
@@ -28,6 +30,11 @@ export default Ember.Component.extend({
         properties: ['openFile'],
         filters: [{ name: 'Pdf', extensions: ['pdf'] }]
       }, (files) => this._insertPage(files[0], pageIdx));
+    },
+
+    adjustThreshold(pageIdx, adjustment) {
+      const page = this.get('data').objectAt(pageIdx);
+      this._pageToRows(page, pageIdx, adjustment)
     },
 
     save() {
@@ -55,12 +62,13 @@ export default Ember.Component.extend({
   },
 
   _displayPdf(data) {
-    data.formImage.Pages.forEach((page) => {
-      this._pageToRows(page);
+    this.set('data', data.formImage.Pages);
+    data.formImage.Pages.forEach((page, idx) => {
+      this._pageToRows(page, idx);
     });
   },
 
-  _pageToRows(page, oldPageIdx = null) {
+  _pageToRows(page, idx, adjustment = 0) {
     let pageRows = {}
     let rows = {};
     const xPositions = [];
@@ -75,7 +83,9 @@ export default Ember.Component.extend({
     
     const values = (Object.values(pageRows));
     const domain = [0, 40];
-    const threshold = Math.max(...values);
+    let threshold = this.get('thresholds').objectAt(idx) || Math.max(...values);
+    threshold += adjustment
+    this.get('thresholds').insertAt(idx, threshold);
     const histogram = d3.histogram().domain(domain).thresholds(threshold);
     const bins = histogram(xPositions);
 
@@ -91,9 +101,10 @@ export default Ember.Component.extend({
         }
       });
     });
-    if (oldPageIdx) {
-      this.get('pages').removeAt(oldPageIdx);
-      this.get('pages').insertAt(oldPageIdx, Object.values(rows));
+    
+    if (this.get('pages').objectAt(idx)) {
+      this.get('pages').removeAt(idx);
+      this.get('pages').insertAt(idx, Object.values(rows));
     } else {
       this.get('pages').addObject(Object.values(rows));
     }

@@ -3,7 +3,11 @@
   <div class="card">
     {{#each pages as |rows index|}}
     <div class="card-block">
-      <p><a href="#" {{action "insert" index}}>Insert replacement page</a></p>
+      <p>
+        <a href="#" {{action "insert" index}}>Insert replacement page</a>
+        <a href="#" {{action "adjustThreshold" index 1}}>+</a>
+        <a href="#" {{action "adjustThreshold" index -1}}>-</a>
+      </p>
       <table class="table table-bordered">
         <tbody>
           {{#each rows as |row|}}
