@@ -29,6 +29,8 @@ export default Ember.Component.extend({
 
     reset() {
       this.setProperties({ pages: [], data: [], thresholds: [], currentPage: null });
+      this.get('pageNumber')(null);
+      this.get('pageLength')(null);
     },
 
     insert() {
