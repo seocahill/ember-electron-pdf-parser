@@ -11,6 +11,7 @@ export default Ember.Component.extend({
   pages: [],
   data: [],
   thresholds: [],
+  max: 40,
 
   currentPage: null,
 
@@ -19,6 +20,11 @@ export default Ember.Component.extend({
   }),
 
   actions: {
+
+    updateCell(row, idx, newVal) {
+      row.removeAt(idx);
+      row.insertAt(idx, newVal);
+    },
 
     pickFile() {
       dialog.showOpenDialog({ 
@@ -44,6 +50,12 @@ export default Ember.Component.extend({
       const pageIdx = this.get('currentIndex');
       const page = this.get('data').objectAt(pageIdx);
       this._pageToRows(page, pageIdx, adjustment)
+    },
+
+    adjustDomain(adjustment) {
+      const pageIdx = this.get('currentIndex');
+      const page = this.get('data').objectAt(pageIdx);
+      this._pageToRows(page, pageIdx, 0, adjustment);
     },
 
     save() {
@@ -102,7 +114,7 @@ export default Ember.Component.extend({
     this.get('pageLength')(this.get('pages.length'));
   },
 
-  _pageToRows(page, idx, adjustment = 0) {
+  _pageToRows(page, idx, adjustment = 0, maxAdj = 0) {
     let pageRows = {}
     let rows = {};
     const xPositions = [];
@@ -116,7 +128,10 @@ export default Ember.Component.extend({
     });
     
     const values = (Object.values(pageRows));
-    const domain = [0, 40];
+    let max = this.get('max');
+    max += maxAdj;
+    this.set('max', max);
+    const domain = [0, max];
     let threshold = this.get('thresholds').objectAt(idx) || Math.max(...values);
     threshold += adjustment
     this.get('thresholds').insertAt(idx, threshold);

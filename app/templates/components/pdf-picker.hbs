@@ -12,6 +12,10 @@
           <a href="#" class="btn btn-secondary" {{action "adjustThreshold" -1}}>Threshold -</a>
         </div>
         <div class="btn-group-vertical btn-block">
+          <a href="#" class="btn btn-secondary" {{action "adjustDomain" 1}}>Domain +</a>
+          <a href="#" class="btn btn-secondary" {{action "adjustDomain" -1}}>Domain -</a>
+        </div>
+        <div class="btn-group-vertical btn-block">
           <a href="#" class="btn btn-secondary" {{action "prev"}}>Prev page</a>
           <a href="#" class="btn btn-secondary" {{action "next"}}>Next page</a>
         </div>
@@ -22,8 +26,8 @@
         <tbody>
           {{#each currentPage as |row|}}
           <tr>
-            {{#each row as |cell|}}
-            <td>{{cell}}</td>
+            {{#each row as |cell idx|}}
+              {{table-cell value=cell updateCell=(action "updateCell" row idx)}}
             {{/each}}
           </tr>
           {{/each}}
