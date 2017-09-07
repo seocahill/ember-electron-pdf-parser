@@ -22,8 +22,7 @@ export default Ember.Component.extend({
   actions: {
 
     updateCell(row, idx, newVal) {
-      row.removeAt(idx);
-      row.insertAt(idx, newVal);
+      row[idx] = newVal
     },
 
     pickFile() {

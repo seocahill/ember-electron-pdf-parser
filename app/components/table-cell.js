@@ -10,6 +10,8 @@ export default Ember.Component.extend({
 
   focusOut() {
     const newValue = this.$().text();
-    this.get('updateCell')(newValue);
+    if (this.get('value') !== newValue) {
+      this.get('updateCell')(newValue);
+    }
   }
 });
