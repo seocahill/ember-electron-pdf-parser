@@ -1,5 +1,4 @@
 /* global d3 */
-
 import Ember from 'ember';
 
 const { ipcRenderer, remote } = requireNode('electron');
