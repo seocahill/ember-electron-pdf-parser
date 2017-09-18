@@ -142,6 +142,7 @@ export default Ember.Component.extend({
     this.get('thresholds').insertAt(idx, threshold);
     const histogram = d3.histogram().domain(domain).thresholds(threshold);
     const bins = histogram(xPositions);
+    let maxRow = 0;
 
     page.Texts.forEach((text) => {
       const y = (text.y).toFixed(1);
@@ -150,22 +151,32 @@ export default Ember.Component.extend({
 
       bins.forEach((bin, index) => {
         if (bin.includes(x)) {
-          rows[y] = rows[y] || Array((threshold + 1)).fill("");
+          rows[y] = rows[y] || []; //Array((threshold + 1)).fill("");
           if (Ember.isPresent(rows[y][index])) {
             rows[y].insertAt((index + 1), t);
           } else {
             rows[y][index] = t;
           }
+          maxRow = Math.max(maxRow, rows[y].get('length'));
         }
       });
     });
+
+    let rowValues = Object.values(rows);
+    rowValues.forEach((row) => {
+      if (row.get('length') < maxRow) {
+        const padding = maxRow - row.get('length');
+        const cells = Array((padding)).fill("");
+        row.pushObjects(cells);
+      }
+    })
     
     if (this.get('pages').objectAt(idx)) {
       this.get('pages').removeAt(idx);
-      this.get('pages').insertAt(idx, Object.values(rows));
+      this.get('pages').insertAt(idx, rowValues);
       this.set('currentPage', this.get('pages').objectAt(idx))
     } else {
-      this.get('pages').addObject(Object.values(rows));
+      this.get('pages').addObject(rowValues);
     }
   }
 });
