@@ -18,6 +18,11 @@ export default Ember.Component.extend({
     return this.get('pages').indexOf(this.get('currentPage'));
   }),
 
+  currentThreshold: Ember.computed('currentIndex', function() {
+    const idx = this.get('currentIndex');
+    return this.get('thresholds').objectAt(idx);
+  }),
+
   actions: {
 
     updateCell(row, idx, newVal) {
@@ -32,7 +37,7 @@ export default Ember.Component.extend({
     },
 
     reset() {
-      this.setProperties({ pages: [], data: [], thresholds: [], currentPage: null });
+      this.setProperties({ pages: [], data: [], thresholds: [], currentPage: null, max: 40 });
       this.get('pageNumber')(null);
       this.get('pageLength')(null);
     },
@@ -127,6 +132,8 @@ export default Ember.Component.extend({
     
     const values = (Object.values(pageRows));
     let max = this.get('max');
+    let pdfMax = Math.max(...xPositions) + 1;
+    max = Math.max(max, pdfMax);
     max += maxAdj;
     this.set('max', max);
     const domain = [0, max];
@@ -144,7 +151,11 @@ export default Ember.Component.extend({
       bins.forEach((bin, index) => {
         if (bin.includes(x)) {
           rows[y] = rows[y] || Array((threshold + 1)).fill("");
-          rows[y][index] = t;
+          if (Ember.isPresent(rows[y][index])) {
+            rows[y].insertAt((index + 1), t);
+          } else {
+            rows[y][index] = t;
+          }
         }
       });
     });
