@@ -11,6 +11,7 @@ export default Ember.Component.extend({
   data: [],
   thresholds: [],
   max: 40,
+  min: 0,
 
   currentPage: null,
 
@@ -18,7 +19,7 @@ export default Ember.Component.extend({
     return this.get('pages').indexOf(this.get('currentPage'));
   }),
 
-  currentThreshold: Ember.computed('currentIndex', function() {
+  currentThreshold: Ember.computed('currentIndex', 'currentPage', function() {
     const idx = this.get('currentIndex');
     return this.get('thresholds').objectAt(idx);
   }),
@@ -55,10 +56,25 @@ export default Ember.Component.extend({
       this._pageToRows(page, pageIdx, adjustment)
     },
 
+    concatRow(row, idx) {
+      let page = this.get('currentPage');
+      const value = row.join('');
+      let newRow = Array((row.length)).fill("");
+      newRow[0] = value;
+      page.removeAt(idx);
+      page.insertAt(idx, newRow);
+    },
+
     adjustDomain(adjustment) {
       const pageIdx = this.get('currentIndex');
       const page = this.get('data').objectAt(pageIdx);
       this._pageToRows(page, pageIdx, 0, adjustment);
+    },
+
+    reRenderUsingSplit() {
+      const pageIdx = this.get('currentIndex');
+      const page = this.get('data').objectAt(pageIdx);
+      this._pageToRows(page, pageIdx, 0, 0, true);
     },
 
     save() {
@@ -104,7 +120,13 @@ export default Ember.Component.extend({
 
   _parsePdf(file) {
     ipcRenderer.send('parse-pdf', file);
-    ipcRenderer.once('parse-pdf-done', (e, pdfData) => this._displayPdf(pdfData));
+    ipcRenderer.once('parse-pdf-done', (e, pdfData) => {
+      // uncomment to debug
+      // dialog.showSaveDialog({
+      //   filters: [{ name: 'Json', extensions: ['json'] }]
+      // }, (path) => fs.writeFile(path, JSON.stringify(pdfData)));
+      this._displayPdf(pdfData)
+    });
   },
 
   _displayPdf(data) {
@@ -117,7 +139,7 @@ export default Ember.Component.extend({
     this.get('pageLength')(this.get('pages.length'));
   },
 
-  _pageToRows(page, idx, adjustment = 0, maxAdj = 0) {
+  _pageToRows(page, idx, adjustment = 0, maxAdj = 0, split = false) {
     let pageRows = {}
     let rows = {};
     const xPositions = [];
@@ -132,14 +154,19 @@ export default Ember.Component.extend({
     
     const values = (Object.values(pageRows));
     let max = this.get('max');
-    let pdfMax = Math.max(...xPositions) + 1;
+    let min = this.get('min');
+    let pdfMax = Math.round(Math.max(...xPositions));
+    let pdfMin = Math.round(Math.min(...xPositions));
     max = Math.max(max, pdfMax);
+    min = Math.max(min, pdfMin);
     max += maxAdj;
     this.set('max', max);
-    const domain = [0, max];
+    this.set('min', min);
+    const domain = [min, max];
+
     let threshold = this.get('thresholds').objectAt(idx) || Math.max(...values);
     threshold += adjustment
-    this.get('thresholds').insertAt(idx, threshold);
+    this.get('thresholds')[idx] = threshold;
     const histogram = d3.histogram().domain(domain).thresholds(threshold);
     const bins = histogram(xPositions);
     let maxRow = 0;
@@ -151,9 +178,9 @@ export default Ember.Component.extend({
 
       bins.forEach((bin, index) => {
         if (bin.includes(x)) {
-          rows[y] = rows[y] || []; //Array((threshold + 1)).fill("");
+          rows[y] = rows[y] || [];
           if (Ember.isPresent(rows[y][index])) {
-            rows[y].insertAt((index + 1), t);
+            split ? rows[y].insertAt((index + 1), t) : rows[y][index] += t;
           } else {
             rows[y][index] = t;
           }

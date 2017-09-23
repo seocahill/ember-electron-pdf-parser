@@ -3,9 +3,13 @@
     <div class="col-2">
       <ul class="list-group mb-2">
         <li class="list-group-item">Threshold: {{currentThreshold}}</li>
-        <li class="list-group-item">Domain Max: {{max}}</li>
+        <li class="list-group-item">Domain: {{min}}, {{max}}</li>
       </ul>
       <div class="btn-toolbar-vertical sticky-top" style="top:10px;">
+        <div class="btn-group-vertical btn-block">
+          <a href="#" class="btn btn-secondary" {{action "prev"}}>Prev page</a>
+          <a href="#" class="btn btn-secondary" {{action "next"}}>Next page</a>
+        </div>
         <div class="btn-group-vertical btn-block">
           <a href="#" class="btn btn-outline-primary" {{action "save"}}>Save as CSV</a>
           <a href="#" class="btn btn-outline-danger" {{action "reset"}}>Reset</a>
@@ -16,20 +20,20 @@
           <a href="#" class="btn btn-secondary" {{action "adjustThreshold" -1}}>Threshold -</a>
         </div>
         <div class="btn-group-vertical btn-block">
-          <a href="#" class="btn btn-secondary" {{action "adjustDomain" 1}}>Domain +</a>
-          <a href="#" class="btn btn-secondary" {{action "adjustDomain" -1}}>Domain -</a>
+          <a href="#" class="btn btn-secondary" {{action "reRenderUsingSplit" 1}}>Split cells</a>
         </div>
         <div class="btn-group-vertical btn-block">
-          <a href="#" class="btn btn-secondary" {{action "prev"}}>Prev page</a>
-          <a href="#" class="btn btn-secondary" {{action "next"}}>Next page</a>
+          <a href="#" class="btn btn-secondary" {{action "adjustDomain" 1}}>Domain +</a>
+          <a href="#" class="btn btn-secondary" {{action "adjustDomain" -1}}>Domain -</a>
         </div>
       </div>
     </div>
     <div class="col-10">
       <table class="table table-bordered">
         <tbody>
-          {{#each currentPage as |row|}}
+          {{#each currentPage as |row rIdx|}}
           <tr>
+            <td><a href="#" {{action "concatRow" row rIdx}}>+</a></td>
             {{#each row as |cell idx|}}
               {{table-cell value=cell updateCell=(action "updateCell" row idx)}}
             {{/each}}
