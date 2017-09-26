@@ -12,6 +12,7 @@ export default Ember.Component.extend({
   thresholds: [],
   max: 40,
   min: 0,
+  processing: false,
 
   currentPage: null,
 
@@ -34,7 +35,10 @@ export default Ember.Component.extend({
       dialog.showOpenDialog({ 
         properties: ['openFile'],
         filters: [{ name: 'Pdf', extensions: ['pdf'] }]
-      }, (files) => this._parsePdf(files[0]));
+      }, (files) => {
+        this.set('processing', true);
+        this._parsePdf(files[0]);
+      });
     },
 
     reset() {
@@ -137,7 +141,8 @@ export default Ember.Component.extend({
       // dialog.showSaveDialog({
       //   filters: [{ name: 'Json', extensions: ['json'] }]
       // }, (path) => fs.writeFile(path, JSON.stringify(pdfData)));
-      this._displayPdf(pdfData)
+      this._displayPdf(pdfData);
+      this.set('processing', false);
     });
   },
 

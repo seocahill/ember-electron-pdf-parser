@@ -36,8 +36,6 @@
             <td class="align-middle">
               <div class="btn-group btn-group-sm">
                 <a href="#" {{action "concatRow" row rIdx}} class="btn btn-secondary">+</a>
-                <a href="#" {{action "moveRowUp" row rIdx}} class="btn btn-secondary">&uarr;</a>
-                <a href="#" {{action "moveRowDown" row rIdx}} class="btn btn-secondary btn-sm">&darr;</a>
               </div>
             </td>
             {{#each row as |cell idx|}}
@@ -52,7 +50,13 @@
 {{else}}
   <div class="container" style="height: 80vh;">
     <div class="row h-100 justify-content-center align-items-center">
-      <span class="align-middle"><a href="#" class="btn btn-outline-primary btn-lg" {{action "pickFile"}}>Choose file</a></span>
+      <span class="align-middle">
+        {{#if processing}}
+          <p>Processing file...</p>
+        {{else}}
+          <a href="#" class="btn btn-outline-primary btn-lg" {{action "pickFile"}}>Choose file</a>
+        {{/if}}
+      </span>
     </div>
   </div>
 {{/if}}
