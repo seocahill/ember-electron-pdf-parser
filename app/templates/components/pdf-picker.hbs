@@ -33,7 +33,13 @@
         <tbody>
           {{#each currentPage as |row rIdx|}}
           <tr>
-            <td><a href="#" {{action "concatRow" row rIdx}}>+</a></td>
+            <td class="align-middle">
+              <div class="btn-group btn-group-sm">
+                <a href="#" {{action "concatRow" row rIdx}} class="btn btn-secondary">+</a>
+                <a href="#" {{action "moveRowUp" row rIdx}} class="btn btn-secondary">&uarr;</a>
+                <a href="#" {{action "moveRowDown" row rIdx}} class="btn btn-secondary btn-sm">&darr;</a>
+              </div>
+            </td>
             {{#each row as |cell idx|}}
               {{table-cell value=cell updateCell=(action "updateCell" row idx)}}
             {{/each}}

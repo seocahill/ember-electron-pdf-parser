@@ -36,7 +36,7 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({ width, height });
 
   // If you want to open up dev tools programmatically, call
-  // mainWindow.openDevTools();
+  mainWindow.openDevTools();
 
   const emberAppLocation = 'serve://dist';
 

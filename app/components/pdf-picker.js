@@ -65,6 +65,18 @@ export default Ember.Component.extend({
       page.insertAt(idx, newRow);
     },
 
+    moveRowUp(row, idx) {
+      let page = this.get('currentPage');
+      page.removeAt(idx);
+      page.insertAt((idx -1), row);
+    },
+
+    moveRowDown(row, idx) {
+      let page = this.get('currentPage');
+      page.removeAt(idx);
+      page.insertAt((idx + 1), row);
+    },
+
     adjustDomain(adjustment) {
       const pageIdx = this.get('currentIndex');
       const page = this.get('data').objectAt(pageIdx);
@@ -151,7 +163,7 @@ export default Ember.Component.extend({
       pageRows[y] += 1;
       xPositions.addObject(x);
     });
-    
+
     const values = (Object.values(pageRows));
     let max = this.get('max');
     let min = this.get('min');
@@ -189,14 +201,18 @@ export default Ember.Component.extend({
       });
     });
 
-    let rowValues = Object.values(rows);
-    rowValues.forEach((row) => {
-      if (row.get('length') < maxRow) {
-        const padding = maxRow - row.get('length');
-        const cells = Array((padding)).fill("");
-        row.pushObjects(cells);
-      }
-    })
+    // Need to resort the rows unfortunately
+    const rowValues = Object.keys(rows)
+      .sort((a,b) => a - b)
+      .map((key) => {
+        const row = rows[key];
+        if (row.get('length') < maxRow) {
+          const padding = maxRow - row.get('length');
+          const cells = Array((padding)).fill("");
+          row.pushObjects(cells);
+        }
+        return row;
+    });
     
     if (this.get('pages').objectAt(idx)) {
       this.get('pages').removeAt(idx);
